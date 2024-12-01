@@ -3,6 +3,7 @@
 #include <stdlib.h>     /* abs */
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 using namespace std;
 
@@ -25,12 +26,27 @@ void bubbleSort(vector<int> &v)
     }
 }
 
+
+void fill_dict(unordered_map<int, int> &dict, const vector<int> &v)
+{
+    int n = v.size();
+    for (int i = 0; i < n; i++)
+    {
+        if (dict.count(v[i]) == 0)
+            dict[v[i]] = 1;     // initialization
+        else
+            dict[v[i]] += 1;    // incrementation
+    }
+}
+
+
 int main()
 {
     // puzzle variables
     string str;
     vector<string> v;
     vector<int> l_list, r_list;
+    unordered_map<int, int> l_dict, r_dict;
     int res;
 
     // open puzzle input
@@ -66,9 +82,9 @@ int main()
         }
         len.push_back(str.length()-curr_pos); // ending length
 
-        cout << str << endl;
-        cout << "pos: " << pos[0] << " " << pos[1] << endl;
-        cout << "len: " << len[0] << " " << len[1] << endl;
+        // cout << str << endl;
+        // cout << "pos: " << pos[0] << " " << pos[1] << endl;
+        // cout << "len: " << len[0] << " " << len[1] << endl;
 
         l_list.push_back(stoi(str.substr(pos[0],len[0])));
         r_list.push_back(stoi(str.substr(pos[1],len[1]))); 
@@ -79,13 +95,34 @@ int main()
     bubbleSort(l_list);
     bubbleSort(r_list);
 
-    // compute result
+
+    // compute part. 1 result
     res = 0;
     for (int i = 0; i < l_list.size(); i++)
     {
         res += abs(r_list[i]-l_list[i]);
-        cout << "res = " << res << endl;
+        
     }
-    return 0;
+    cout << "part. 1 res = " << res << endl;
 
+
+    // part. 2
+    fill_dict(l_dict, l_list);
+    fill_dict(r_dict, r_list);
+
+    // print for debugg
+    // for (auto it : l_dict)
+    //     cout << it.first << ": " << it.second << endl;
+    // for (auto it : r_dict)
+    //     cout << it.first << ": " << it.second << endl;
+
+    res = 0;
+    for (auto it : l_dict)
+    {
+        auto val = it.first;
+        res += ( val * l_dict[val] * r_dict[val] );
+        cout << "part. 2 res = " << res << endl;
+    }
+
+    return 0;
 }
