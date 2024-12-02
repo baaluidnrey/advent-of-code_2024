@@ -5,25 +5,19 @@
 #include <string>
 #include <unordered_map>
 
+#define debug true
+
 using namespace std;
 
 
 bool inRange(int low, int high, int x)          
-{   
-    bool res = (low <= x && x <= high);
-    // cout << "low : " << low;
-    // cout << "; high : " << high;
-    // cout << "; x : " << x;
-    // cout << "; res : " << res;
-    // cout << endl;
-    return res;  
+{
+    return (low <= x && x <= high);
 }
 
-int customSign(int val)
-{
-    int res = (val>=0) ? 1 : -1;
-    // cout << "val : " << val << "; res : " << res << endl;
-    return res;
+int sign(int val)
+{    
+    return (val>=0) ? 1 : -1;
 }
 
 
@@ -38,7 +32,9 @@ int main()
 
     // open puzzle input
     ifstream f("input.csv");
-    if (!f.is_open())
+    ofstream debug_file;
+    debug_file.open("debug_file.txt");
+    if (!f.is_open() || !debug_file.is_open())
     {
         cerr << "Error opening the file!";
         return 1;
@@ -64,21 +60,16 @@ int main()
         if (pos.size() != len.size())
             cerr << "Error: pos and len have different size." << endl;
 
-        // for (int i=0; i < pos.size(); i++)
-        // {
-        //     cout << "pos: " << pos[i] << "; len: " << len[i] << endl;
-        // }
-
 
         // fill vector of the line
         v.clear();
-        // cout << "v : ";
+        if (debug) debug_file << "v : ";
         for (int i=0; i < pos.size(); i++)
         {
             v.push_back(stoi(str.substr(pos[i],len[i])));
-            // cout << "\"" << v.back() << "\", ";
+            if (debug) debug_file << "\"" << v.back() << "\", ";
         }
-        // cout << endl;
+        if (debug) debug_file << endl;
 
 
         // compute result
@@ -87,15 +78,19 @@ int main()
         while ( tmp_res!=0 && i < v.size()-1 )
         {
             tmp_res *= inRange(1, 3, abs(v[i]-v[i-1]));
-            tmp_res *= ( customSign(v[i]-v[i-1])==customSign(v[i+1]-v[i]) );
-            // cout << "current val: " << v[i] << endl;
-            // cout << "---" << endl;
+            tmp_res *= inRange(1, 3, abs(v[i+1]-v[i]));
+            tmp_res *= ( sign(v[i]-v[i-1])==sign(v[i+1]-v[i]) );
+            if (debug) debug_file << "current val: " << v[i] << endl;
+            if (debug) debug_file << "---" << endl;
             i++;
         }
-        res += tmp_res;  
+        res += tmp_res;
+        if (debug) debug_file << "tmp_res : " << tmp_res << endl;
+        if (debug) debug_file << "---" << endl;
     }
     cout << "res part. 1 : " << res << endl;
     f.close();
+    debug_file.close();
 
     return 0;
 }
