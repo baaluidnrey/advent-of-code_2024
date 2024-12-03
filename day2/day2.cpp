@@ -31,7 +31,7 @@ int computeBadLevel(const vector<int> &v, vector<int> &pos)
         if (i==0 && v.size()>2)
             tmp_res *= ( sign(v[i+1]-v[i])==sign(v[i+2]-v[i+1]) );
         
-        else if (i==v.size() && v.size()>2)
+        else if (i==v.size()-1 && v.size()>2)
             tmp_res *= ( sign(v[i]-v[i-1])==sign(v[i-1]-v[i-2]) );
 
         else if (inRange(1,v.size()-1,i))
@@ -66,7 +66,7 @@ int main()
 
 
     // open puzzle input
-    ifstream f("test_input.csv");
+    ifstream f("input.csv");
     ofstream debug_file;
     debug_file.open("debug_file.txt");
     if (!f.is_open() || !debug_file.is_open())
@@ -111,11 +111,27 @@ int main()
         // compute result
         pos.clear();
         bad_level = computeBadLevel(v, pos);
-        if (bad_level >= 1) res++;
-        else
+        if (bad_level >= 1) 
         {
-            // v.erase(v.begin()+i);
-        }
+            for (int i = 0; i < pos.size(); i++)
+            {
+                // copy vector v into v_tmp
+                vector<int> v_tmp;
+                v_tmp.insert(v_tmp.begin(), v.begin(), v.end());
+
+                // remove current bad level
+                v_tmp.erase(v_tmp.begin()+pos[i]);
+                vector<int> pos_tmp;
+                int bad_level_tmp = computeBadLevel(v_tmp, pos_tmp);
+                if (bad_level_tmp == 0)
+                {
+                    res++;
+                    break;
+                }
+            }
+        } 
+        else res++;
+
 
         if (debug) 
         {
