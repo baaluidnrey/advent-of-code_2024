@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <regex>
 
 #define debug false
 
@@ -12,6 +13,7 @@ int main()
 
     // puzzle variables
     string regex = "mul(*,*)";
+    string str;
     vector<int> v;
     int res = 0;
 
@@ -26,6 +28,16 @@ int main()
         return 1;
     }
 
+    while (getline(f, str))
+    {
+        regex word_regex("\\d+");
+    }
+
+
+    
+
+
+/* SELF_IMPLEMENTATION oF REGEX, DOES NOT WORK
 
     // read char by char
     int index_regex = 0;
@@ -97,9 +109,12 @@ int main()
     res = 0;
     for (int i = 0; i < v.size()/2; i++)
     {
-        res += v[2*i]*v[2*i+1];
+        if (v[2*i]<1000 && v[2*i+1]<1000)
+            res += v[2*i]*v[2*i+1];
     }
     cout << "res = " << res << endl;
+
+*/
 
     return 0;
 }
