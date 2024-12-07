@@ -8,6 +8,26 @@
 
 using namespace std;
 
+bool break_rules(vector<int> &pages, unordered_map<int, vector<int>> &rules)
+{
+    for (int page : pages)
+    {
+        if (rules.count(page) != 0)     // a rule for the page number exists
+        {
+            auto p_ref = find(pages.begin(), pages.end(), page);
+            for (int i : rules[page])
+            {
+                auto p = find(pages.begin(), pages.end(), i);
+                if (p < p_ref)
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+
 int main()
 {
     // puzzle variables
@@ -17,7 +37,9 @@ int main()
     int pos_start, pos_end;
     bool get_rules=true;
     bool breaking_rules=false;
-    int res = 0;
+    bool reshaped=false;
+    int res_1 = 0;
+    int res_2 = 0;
 
     // open puzzle input
     ifstream f("input.txt");
@@ -31,6 +53,7 @@ int main()
     {
         if (str=="") get_rules=false;
 
+        // extract the rules
         if (get_rules)
         {
             pos_end = str.find("|");
@@ -55,45 +78,72 @@ int main()
             }
             if (pos_start > 0)  pages.push_back(stoi(str.substr(pos_start)));
 
-            for (int i : pages) cout << i << ", ";
-            cout << endl; 
 
             // does it follow the rules ?
-            breaking_rules = false;
-            for (int page : pages)
-            {
-                if (rules.count(page) != 0)     // a rule for the page number exists
-                {
-                    cout << "page #" << page << " should be before pages ";
-                    for (int i : rules[page]) cout << i << ", ";
-                    cout << endl;
+            bool breaking_rules = break_rules(pages, rules);
+            reshaped=false;
 
-                    auto p_ref = find(pages.begin(), pages.end(), page);
-                    for (int i : rules[page])
+            
+            // part. 1
+            if (!breaking_rules and pages.size()>0) 
+                res_1+=pages[floor(pages.size()/2)];
+
+
+            // part. 2
+            int nb_reshaping = 0;
+            while ( break_rules(pages, rules) )
+            {
+                // sort the non-working ordering
+                for (int page : pages)
+                {
+                    if (rules.count(page) != 0)     // a rule for the page number exists
                     {
-                        auto p = find(pages.begin(), pages.end(), i);
-                        if (p < p_ref)
+
+                        cout << "page #" << page << " should be before pages ";
+                        for (int i : rules[page]) cout << i << ", ";
+                        cout << endl;
+
+                        auto p_ref = find(pages.begin(), pages.end(), page);
+                        for (int i : rules[page])
                         {
-                            breaking_rules=true;
-                            cout << "breaking rules" << endl;
-                            break;
+                            auto p = find(pages.begin(), pages.end(), i);
+                            if (p < p_ref)
+                            {
+
+                                cout << "before: ";
+                                for (int toto : pages) cout << toto << ", ";
+                                cout << endl;
+
+                                pages.erase(p);
+                                pages.insert(p_ref, i);
+
+                                cout << "after: ";
+                                for (int toto : pages) cout << toto << ", ";
+                                cout << endl;
+                            }
                         }
-                        if (breaking_rules) break;
                     }
                 }
-            if (breaking_rules) break;
+                nb_reshaping++;
+
+                if (nb_reshaping>10)
+                {
+                    cerr << "Too many reshapings";
+                    break;
+                }
+                reshaped=true;
             }
-            
-            if (!breaking_rules and pages.size()>0) 
+            if (reshaped && nb_reshaping<=10 && pages.size()>0)
             {
-                int mid = floor(pages.size()/2);
-                res+=pages[mid];
+                res_2+=pages[floor(pages.size()/2)];
+                cout << "res: " << res_2 << endl;
             }
         }
     }
     f.close();
 
-    cout << "res: " << res << endl;
+    cout << "res part. 1: " << res_1 << endl;
+    cout << "res part. 2: " << res_2 << endl;
 
     return 0;
 }
