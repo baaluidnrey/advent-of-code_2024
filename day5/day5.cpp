@@ -98,28 +98,14 @@ int main()
                 {
                     if (rules.count(page) != 0)     // a rule for the page number exists
                     {
-
-                        cout << "page #" << page << " should be before pages ";
-                        for (int i : rules[page]) cout << i << ", ";
-                        cout << endl;
-
                         auto p_ref = find(pages.begin(), pages.end(), page);
                         for (int i : rules[page])
                         {
                             auto p = find(pages.begin(), pages.end(), i);
                             if (p < p_ref)
                             {
-
-                                cout << "before: ";
-                                for (int toto : pages) cout << toto << ", ";
-                                cout << endl;
-
                                 pages.erase(p);
                                 pages.insert(p_ref, i);
-
-                                cout << "after: ";
-                                for (int toto : pages) cout << toto << ", ";
-                                cout << endl;
                             }
                         }
                     }
@@ -136,7 +122,6 @@ int main()
             if (reshaped && nb_reshaping<=10 && pages.size()>0)
             {
                 res_2+=pages[floor(pages.size()/2)];
-                cout << "res: " << res_2 << endl;
             }
         }
     }
