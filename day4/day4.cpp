@@ -15,14 +15,14 @@ int search_word(const vector<char> &v, const int width, const int height, const 
     {
         index = (pos[0] + i * dec[0]) * width + (pos[1] + i * dec[1]);
 
-        if ( pos[0] + i * dec[0] < 0 || pos[0] + i * dec[0] > height )
+        if ( pos[0] + i * dec[0] < 0 || pos[0] + i * dec[0] >= height )
         {
             res = 0;
             // cerr << "out of lines" << endl;
             break;
         }
 
-        else if ( pos[1] + i * dec[1] < 0 || pos[1] + i * dec[1] > width )
+        else if ( pos[1] + i * dec[1] < 0 || pos[1] + i * dec[1] >= width )
         {
             res = 0;
             // cerr << "out of rows" << endl;
@@ -82,7 +82,7 @@ int main()
 
 
     // open puzzle input
-    ifstream f("test_input.txt");
+    ifstream f("input.txt");
     if (!f.is_open())
     {
         cerr << "Error opening the file!";
