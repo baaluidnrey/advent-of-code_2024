@@ -46,7 +46,7 @@ int main()
 
 
     // open puzzle input
-    ifstream f("test_input.txt");
+    ifstream f("input.txt");
     if (!f.is_open())
     {
         cerr << "Error opening the file!";
@@ -89,10 +89,10 @@ int main()
 
                 int n_MAS = 0;
 
-                n_MAS += ( ( search_word(v, width, height, pos, 0, 1, "AS") == 1 && search_word(v, width, height, pos, 0, -1, "AM") == 1 ) );   // right
-                n_MAS += ( ( search_word(v, width, height, pos, 0, -1, "AS") == 1 && search_word(v, width, height, pos, 0, 1, "AM") == 1 ) );   // left
-                n_MAS += ( ( search_word(v, width, height, pos, -1, 0, "AS") == 1 && search_word(v, width, height, pos, 1, 0, "AM") == 1 ) );   // up
-                n_MAS += ( ( search_word(v, width, height, pos, 1, 0, "AS") == 1 && search_word(v, width, height, pos, -1, 0, "AM") == 1 ) );   // down
+                // n_MAS += ( ( search_word(v, width, height, pos, 0, 1, "AS") == 1 && search_word(v, width, height, pos, 0, -1, "AM") == 1 ) );   // right
+                // n_MAS += ( ( search_word(v, width, height, pos, 0, -1, "AS") == 1 && search_word(v, width, height, pos, 0, 1, "AM") == 1 ) );   // left
+                // n_MAS += ( ( search_word(v, width, height, pos, -1, 0, "AS") == 1 && search_word(v, width, height, pos, 1, 0, "AM") == 1 ) );   // up
+                // n_MAS += ( ( search_word(v, width, height, pos, 1, 0, "AS") == 1 && search_word(v, width, height, pos, -1, 0, "AM") == 1 ) );   // down
                 n_MAS += ( ( search_word(v, width, height, pos, -1, 1, "AS") == 1 && search_word(v, width, height, pos, 1, -1, "AM") == 1 ) );  // up-right
                 n_MAS += ( ( search_word(v, width, height, pos, -1, -1, "AS") == 1 && search_word(v, width, height, pos, 1, 1, "AM") == 1 ) );  // up-left
                 n_MAS += ( ( search_word(v, width, height, pos, 1, 1, "AS") == 1 && search_word(v, width, height, pos, -1, -1, "AM") == 1 ) );  // down-right
