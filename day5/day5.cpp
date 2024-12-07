@@ -16,10 +16,11 @@ int main()
     vector<int> pages;
     int pos_start, pos_end;
     bool get_rules=true;
+    bool breaking_rules=false;
     int res = 0;
 
     // open puzzle input
-    ifstream f("test_input.txt");
+    ifstream f("input.txt");
     if (!f.is_open())
     {
         cerr << "Error opening the file!";
@@ -52,15 +53,13 @@ int main()
                 pages.push_back(stoi(str.substr(pos_start, pos_end)));
                 pos_start = pos_end+1;
             }
-            pages.push_back(10);
-            cout << str.substr(pos_start, str.length()-1) << endl;
-            cout << "length of last value: " << str.substr(pos_start, str.length()-1).length() << endl;
-            // pages.push_back(stoi(str.substr(pos_start)));
+            if (pos_start > 0)  pages.push_back(stoi(str.substr(pos_start)));
+
             for (int i : pages) cout << i << ", ";
             cout << endl; 
 
             // does it follow the rules ?
-            bool breaking_rules = false;
+            breaking_rules = false;
             for (int page : pages)
             {
                 if (rules.count(page) != 0)     // a rule for the page number exists
@@ -85,8 +84,11 @@ int main()
             if (breaking_rules) break;
             }
             
-            // if (!breaking_rules) cout << pages.back() << endl;
-            // res+=pages[ceil(pages.size()/2)+1];
+            if (!breaking_rules and pages.size()>0) 
+            {
+                int mid = floor(pages.size()/2);
+                res+=pages[mid];
+            }
         }
     }
     f.close();
