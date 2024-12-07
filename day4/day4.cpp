@@ -43,11 +43,10 @@ int main()
     string word="XMAS";
     int index = 0;
     int res = 0;
-    int tmp_res = 0;
 
 
     // open puzzle input
-    ifstream f("input.txt");
+    ifstream f("test_input.txt");
     if (!f.is_open())
     {
         cerr << "Error opening the file!";
@@ -84,18 +83,26 @@ int main()
             pos[0] = i; pos[1] = j;
 
             // search XMAX
-            if (v[index] == word[0])
+            if (v[index] == 'A')
             {
-                cout << "X is at position (" << pos[0] << ", " << pos[1] << ")" << endl;
+                cout << "A is at position (" << pos[0] << ", " << pos[1] << ")" << endl;
 
-                res += search_word(v, width, height, pos, 0, 1, word);      // right
-                res += search_word(v, width, height, pos, 0, -1, word);     // left
-                res += search_word(v, width, height, pos, -1, 0, word);     // up
-                res += search_word(v, width, height, pos, 1, 0, word);      // bottom
-                res += search_word(v, width, height, pos, -1, 1, word);     // up - right                
-                res += search_word(v, width, height, pos, -1, -1, word);    // up - left
-                res += search_word(v, width, height, pos, 1, 1, word);      // bottom - right
-                res += search_word(v, width, height, pos, 1, -1, word);     // bottom - left
+                int n_MAS = 0;
+
+                n_MAS += ( ( search_word(v, width, height, pos, 0, 1, "AS") == 1 && search_word(v, width, height, pos, 0, -1, "AM") == 1 ) );   // right
+                n_MAS += ( ( search_word(v, width, height, pos, 0, -1, "AS") == 1 && search_word(v, width, height, pos, 0, 1, "AM") == 1 ) );   // left
+                n_MAS += ( ( search_word(v, width, height, pos, -1, 0, "AS") == 1 && search_word(v, width, height, pos, 1, 0, "AM") == 1 ) );   // up
+                n_MAS += ( ( search_word(v, width, height, pos, 1, 0, "AS") == 1 && search_word(v, width, height, pos, -1, 0, "AM") == 1 ) );   // down
+                n_MAS += ( ( search_word(v, width, height, pos, -1, 1, "AS") == 1 && search_word(v, width, height, pos, 1, -1, "AM") == 1 ) );  // up-right
+                n_MAS += ( ( search_word(v, width, height, pos, -1, -1, "AS") == 1 && search_word(v, width, height, pos, 1, 1, "AM") == 1 ) );  // up-left
+                n_MAS += ( ( search_word(v, width, height, pos, 1, 1, "AS") == 1 && search_word(v, width, height, pos, -1, -1, "AM") == 1 ) );  // down-right
+                n_MAS += ( ( search_word(v, width, height, pos, 1, -1, "AS") == 1 && search_word(v, width, height, pos, -1, 1, "AM") == 1 ) );  // down-left
+
+                if (n_MAS >= 2)
+                {
+                    cout << "GOT A X-MAX" << endl;
+                    res++;
+                }
             }
         }
     }
