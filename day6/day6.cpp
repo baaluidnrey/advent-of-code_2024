@@ -4,6 +4,8 @@
 #include <string>
 #include <algorithm>
 
+enum corner { UL, UR, DR, DL };
+
 using namespace std;
 
 int lookForNextObstacle(const vector<int> &obstacles, int i, int j, const int d[2], const int height, const int width)
@@ -36,6 +38,81 @@ int lookForNextObstacle(const vector<int> &obstacles, int i, int j, const int d[
         k+=(d[0]+d[1]);
     }
     return -1;
+}
+
+void printCorner(const corner &c)
+{
+    switch(c)
+    {
+        case UL: cout << "UL" << endl; break;
+        case UR: cout << "UR" << endl; break;
+        case DR: cout << "DR" << endl; break;
+        case DL: cout << "DL" << endl; break;
+    }
+}
+
+void cornerRotation(corner &c)
+{
+    switch(c)
+    {
+        case UL: c = UR;    break;
+        case UR: c = DR;    break;
+        case DR: c = DL;    break;
+        case DL: c = UL;    break;
+    }
+}
+
+int computeMissingCorner(const int p1, const int p3, const corner c, const int width)
+{
+    int p4;
+    switch(c)
+    {
+        // p = i*width+j
+        case UL: p4 = ((p1/width)-1)*width + ((p3%width)+1);    break;
+        case UR: p4 = ((p3/width)+1)*width + ((p1%width)+1);    break;
+        case DR: p4 = ((p1/width)+1)*width + ((p3%width)-1);    break;
+        case DL: p4 = ((p3/width)-1)*width + ((p1%width)-1);    break;
+    }
+    return p4;
+}
+
+bool isNextCornerBeformeMissingOne(const int added_obstacle, const int existing_obstacle, const corner c, const int width)
+{
+    bool res;
+
+    int i_a = (added_obstacle / width);
+    int j_a = (added_obstacle % width);
+
+    int i_e = (existing_obstacle / width);
+    int j_e = (existing_obstacle % width);
+
+    switch(c)
+    {
+        // p = i*width+j
+        case UL: res = (i_a < i_e);     break;
+        case UR: res = (j_a > j_e);     break;
+        case DR: res = (i_a > i_e);     break;
+        case DL: res = (j_a < j_e);     break;
+    }
+    return res;
+}
+
+
+int lookForNextCorner(const vector<int> &obstacles, const corner c, const int pos, const int width, const int height)
+{
+    int i = (pos / width);
+    int j = (pos % width);
+    int d[2];
+
+    switch(c)
+    {
+        case UL  : i+=1; d[0]=0; d[1]=1;    break;
+        case UR  : j-=1; d[0]=1; d[1]=0;    break;
+        case DR  : i-=1; d[0]=0; d[1]=-1;   break;
+        case DL  : j+=1; d[0]=-1; d[1]=0;   break;
+    }
+    printCorner(c);
+    return lookForNextObstacle(obstacles, i, j, d, height, width);
 }
 
 
@@ -115,14 +192,85 @@ int main()
     res = 0;
     for (int pos : obstacles)
     {   
-        bool solution = false;
-        int added_obs = -1;
-
         // position in row-column
         int i = (pos / width);
         int j = (pos % width);
         cout << "---" << endl;
         cout << "obstacle in (" << i << ", " << j << ")" << endl;
+
+        vector<corner> corners = { UL, UR, DR, DL };
+        for (corner c : corners)
+        {
+            cout << "starting research from corner ";
+            printCorner(c);
+            cout << endl;
+
+            bool solution = true;
+            int added_obs = -1;
+            int c_pos = pos;
+            int n = 0;
+
+            // look for two corners from the current one
+            do
+            {
+                c_pos = lookForNextCorner(obstacles, c, c_pos, width, height);
+                cornerRotation(c);
+                n++;
+            }
+            while ( c_pos!=-1 && n<2 );
+
+            if (c_pos!=-1)  // do nothing if a corner has not been found
+            {
+                // compute the position of the missing corner
+                added_obs = computeMissingCorner(pos, c_pos, c, width);
+
+                // check if the missing corner can be achieved from the current corner (if not other obstacle is on the way)
+                auto next_obstacle = lookForNextCorner(obstacles, c, c_pos, width, height);
+                if (next_obstacle!=-1 && !isNextCornerBeformeMissingOne(added_obs, next_obstacle, c, width)) 
+                    solution=true;
+                else 
+                {
+                    cout << "An obstacle is on the way." << endl;
+                    solution = false;
+                }
+
+                // check if the added obstacle does not already exists in the added obstacles
+                if (find(added_obstacles.begin(), added_obstacles.end(), added_obs) == added_obstacles.end())
+                    solution = true;
+                else 
+                {
+                    cout << "The obstacle has alredy been added to the list of the possible ones." << endl;
+                    solution = false;
+                }
+
+                // check if the added obstacle does not already exists as an obstacle
+                if (find(obstacles.begin(), obstacles.end(), added_obs) == obstacles.end())
+                    solution = true;
+                else 
+                {
+                    cout << "The obstacle already exists." << endl;
+                    solution = false;
+                }
+
+                // add the obstacle
+                if (solution)
+                {
+                    res++;
+                    added_obstacles.push_back(added_obs);
+                    cout << "added obstacle: " << added_obs << endl; 
+                }
+            } // if (c_pos!=-1)
+        }
+        
+
+
+
+
+
+
+
+
+    /*
 
         // look from up-left corner
         if (!solution)
@@ -271,6 +419,7 @@ int main()
             }
         }
 
+    */
 
     }
 
