@@ -17,10 +17,14 @@ int main()
     long test_value;
     long value, tmp_value;
     vector<long> numbers;
+    vector<string> combinations;
+    vector<int> combination_index;
+    string combination;
+    string operators = "+X|";
     long res = 0;
 
     // open puzzle input
-    ifstream f("input.txt");
+    ifstream f("test_input.txt");
     if (!f.is_open())
     {
         cerr << "Error opening the file!";
@@ -59,6 +63,8 @@ int main()
             cout << endl;
         }
 
+        /* PART 1. 
+
         // search if a combination of 'x' and '+' can make the equation match the test_value
         for (int i=0; i<pow(2,numbers.size()-1); i++)
         {
@@ -92,11 +98,62 @@ int main()
                 break;
             }
         }
+        */
+
+        // PART. 2
+        
+        // create combinations (it would be better to use a tree)
+        combination_index.clear();
+        for (int i = 0; i<numbers.size()-1; i++)  combination_index.push_back(0);     // initialisation
+
+        int k = 0;
+        for (int i = 0; i < operators.length()*(numbers.size()-1); i++)
+        {
+            for (int j = 0; j < numbers.size()-1; j++)
+                combination += operators[combination_index[j]];
+
+            combination_index[k]++;
+            // if the last index is max, find the index that has to be changed
+            if (combination_index[k]==operators.length())
+            {
+                combination_index[k]=0;
+                do {k++; combination_index[k]++;}
+                while (k < numbers.size()-2 && combination_index[k]<operators.length()-1);
+                combination_index[k]++;
+                do {k--; combination_index[k]=0;}
+                while (k > 0)
+            }
+        }
+
+
+        /*
+        for (int i = 0; i < operators.length()*(numbers.size()-1); i++)
+        {
+            combination = "";
+            for (int k = 0; k < numbers.size()-1; k++)
+            {
+
+                if (debug)
+                {
+                    cout << "combination_index: ";
+                    for (int index : combination_index) cout << index << ", ";
+                    cout << endl;
+                }
+
+                for (int j = 0; j < numbers.size()-1; j++)
+                    combination += operators[combination_index[j]];
+                cout << combination << endl;
+
+                combination_index[k]++;
+                if (combination_index[k]==operators.length()) combination_index[k]=0;
+            }  
+        }
+        */
     }
     
     f.close();
 
-    cout << "res:" << res << endl;
+    // cout << "res:" << res << endl;
 
     return 0;
 }
