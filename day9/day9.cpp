@@ -13,14 +13,13 @@ int main()
 {
     // puzzle variables
     string str;
-    vector<int> v;
-    string b = "";
-    char c;
-    int val;
-    int res = 0;
+    vector<long> v;
+    vector<long> b;
+    int val_space = -1;
+    long res = 0;
 
     // open puzzle input
-    ifstream f("test_input.txt");
+    ifstream f("input.txt");
     if (!f.is_open())
     {
         cerr << "Error opening the file!";
@@ -42,52 +41,52 @@ int main()
         }
 
         // 2. represent the blocks
-        b = "";
+        b.clear();
         for (int i = 0; i < v.size(); i++)
         {
             int index = (i/2);
-            // c =  static_cast<char>(index);       // int to char, does not work : why ??
-            auto s = to_string(index); c = s[0];    // int to char, that is super ugly but that works.
 
             if (i%2==0)         // file
             {
                 for (int j = 0; j < v[i]; j++)
-                    b.push_back(c);
+                    b.push_back(index);
             }
             else
             {
                 for (int j = 0; j < v[i]; j++)
-                    b.push_back('.');
+                    b.push_back(val_space);
             }
         }
 
         if (debug) 
         {   
             cout << "b: ";
-            for (char c : b) cout << c;
+            for (int i : b) cout << i << " ";
             cout << endl;
         }
 
 
         // 3. do the permutations
-        for (int i = b.length()-1; i>=0; i--)
+        for (int i = b.size()-1; i>=0; i--)
         {
-            if (b[i]!='.')
+            if (b[i]!=val_space)
             {
-                auto p = b.find('.');
-                if (debug)  cout << "b: " << b[i] << ", p: " << p << endl;
-                if (p != string::npos)
+                auto it = find(b.begin(), b.end(), val_space);
+                if (it != b.end())
                 {
+                    int p = it - b.begin();
+                    if (debug)  cout << "b: " << b[i] << ", p: " << p << endl;
+
                     if (p>i) break;
                     b[p] = b[i];
-                    b[i] = '.';
+                    b[i] = val_space;
                 }
             }
 
             if (debug) 
             {   
                 cout << "b: ";
-                for (char c : b) cout << c;
+                for (int i : b) cout << i << ", ";
                 cout << endl;
             }
         }
@@ -95,14 +94,12 @@ int main()
 
         // 4. compute the checksum
         res = 0;
-        for (int i = 0; i < b.length(); i++)
+        for (int i = 0; i < b.size(); i++)
         {
-            val = b[i];
-            cout << "index: " << i << ", val: " << val << endl;
-            res += (i*val);
+            if (debug) cout << "index: " << i << ", val: " << b[i] << endl;
+            if (b[i]!=val_space)
+                res += (i*b[i]);
         }
-            // res += i*(b[i]-'0');
-            // res += i*stoi(b[i]);
 
     }
     f.close();
