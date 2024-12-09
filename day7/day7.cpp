@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <cmath>
 
-#define debug true
+#define debug false
 
 using namespace std;
 
@@ -55,13 +55,10 @@ int main()
         if (pos_start > 0)  numbers.push_back(stol(str.substr(pos_start)));
 
         // print to check
-        if (debug)
-        {
-            cout << "---" << endl;
-            cout << test_value << ": ";
-            for (int i : numbers) cout << i << ", ";
-            cout << endl;
-        }
+        cout << "---" << endl;
+        cout << test_value << ": ";
+        for (int i : numbers) cout << i << ", ";
+        cout << endl;
 
         /* PART 1. 
 
@@ -127,28 +124,29 @@ int main()
             simplified_numbers.clear();     // make a copy of numbers
             simplified_numbers.insert(simplified_numbers.begin(), numbers.begin(), numbers.end());
 
-            for (int j = 0; j < simplified_numbers.size()-1; j++)
-            {
-                if (operations[j]==2)   // 2: |
-                {
-                    int val = stol( to_string(simplified_numbers[j]) + to_string(simplified_numbers[j+1]) );      // quick and dirty, I'm curious bout a way to compute the indice of a number  
+            // for (int j = 0; j < simplified_numbers.size()-1; j++)
+            // {
+            //     if (operations[j]==2)   // 2: |
+            //     {
+            //         int val = stol( to_string(simplified_numbers[j]) + to_string(simplified_numbers[j+1]) );      // quick and dirty, I'm curious bout a way to compute the indice of a number  
 
-                    simplified_numbers.erase(simplified_numbers.begin()+j);
-                    simplified_numbers[j] = val;
+            //         simplified_numbers.erase(simplified_numbers.begin()+j);
+            //         simplified_numbers[j] = val;
                     
-                    operations.erase(operations.begin()+j);
-                }
-            }
+            //         operations.erase(operations.begin()+j);
+            //     }
+            // }
 
 
             // do the + and * computation
             int value = simplified_numbers[0];
             for (int j = 0; j < operations.size(); j++)
             {
-                switch(operations[j])   // 0: +, 1: x
+                switch(operations[j])   // 0: +, 1: x, 2: |
                 {
                     case 0: value+=simplified_numbers[j+1]; break;
                     case 1: value*=simplified_numbers[j+1]; break;
+                    case 2: value = stol( to_string(value) + to_string(simplified_numbers[j+1]) ); break;
                 }
             }
 
@@ -156,7 +154,7 @@ int main()
             if (value == test_value)
             {
                 res+=test_value;
-                if (debug) cout << "add value to res: " << res << endl;
+                cout << "add value to res: " << res << endl;
                 break;
             }
 
@@ -181,7 +179,7 @@ int main()
     
     f.close();
 
-    // cout << "res:" << res << endl;
+    cout << "res:" << res << endl;
 
     return 0;
 }
