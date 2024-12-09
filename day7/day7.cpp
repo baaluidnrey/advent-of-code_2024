@@ -24,7 +24,7 @@ int main()
     long res = 0;
 
     // open puzzle input
-    ifstream f("test_input.txt");
+    ifstream f("input.txt");
     if (!f.is_open())
     {
         cerr << "Error opening the file!";
@@ -139,7 +139,7 @@ int main()
 
 
             // do the + and * computation
-            int value = simplified_numbers[0];
+            long value = simplified_numbers[0];
             for (int j = 0; j < operations.size(); j++)
             {
                 switch(operations[j])   // 0: +, 1: x, 2: |
