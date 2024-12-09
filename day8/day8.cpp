@@ -21,7 +21,7 @@ int main()
     int res = 0;
 
     // open puzzle input
-    ifstream f("input.txt");
+    ifstream f("test_input.txt");
     if (!f.is_open())
     {
         cerr << "Error opening the file!";
@@ -70,20 +70,24 @@ int main()
 
                 // position of the antinodes
                 int dx = x1-x2; int dy = y1-y2;
-                int xa1 = x1 + dx; int ya1 = y1 + dy;
-                int xa2 = x2 - dx; int ya2 = y2 - dy;
+                // int xa1 = x1 + dx; int ya1 = y1 + dy;
+                // int xa2 = x2 - dx; int ya2 = y2 - dy;
 
                 // can we add these positions ?
-                if (xa1 >= 0 && xa1 < width && ya1 >= 0 && ya1 < height)
+                int n = 0;
+                while ( (x1 + n*dx) >= 0 && (x1 + n*dx) < width && (y1 + n*dx) >= 0 && (y1 + n*dx) < height )
                 {
-                    int p = xa1*width + ya1;
-                    if ( find(antinodes.begin(), antinodes.end(), p) == antinodes.end() ) antinodes.push_back(p);     // add if it does not already exists
+                    int p = (x1 + n*dx)*width + (y1 + n*dx);
+                    if ( find(antinodes.begin(), antinodes.end(), p) == antinodes.end() ) antinodes.push_back(p);
+                    n++;
                 }
 
-                if (xa2 >= 0 && xa2 < width && ya2 >= 0 && ya2 < height)
+                n = 0;
+                while ( (x2 - n*dx) >= 0 && (x2 - n*dx) < width && (y2 - n*dx) >= 0 && (y2 - n*dx) < height )
                 {
-                    int p = xa2*width + ya2;
-                    if ( find(antinodes.begin(), antinodes.end(), p) == antinodes.end() ) antinodes.push_back(p);     // add if it does not already exists
+                    int p = (x2 - n*dx)*width + (y2 - n*dx);
+                    if ( find(antinodes.begin(), antinodes.end(), p) == antinodes.end() ) antinodes.push_back(p);
+                    n++;
                 }
             }
         }
