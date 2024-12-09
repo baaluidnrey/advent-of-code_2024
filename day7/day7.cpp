@@ -16,9 +16,9 @@ int main()
     int pos_start, pos_end;
     long test_value;
     long value, tmp_value;
-    vector<long> numbers;
+    vector<long> numbers, simplified_numbers;
     vector<string> combinations;
-    vector<int> combination_index;
+    vector<int> combination_index, operations;
     string combination;
     string operators = "+X|";
     long res = 0;
@@ -107,48 +107,76 @@ int main()
         for (int i = 0; i<numbers.size()-1; i++)  combination_index.push_back(0);     // initialisation
 
         int k = 0;
-        for (int i = 0; i < operators.length()*(numbers.size()-1); i++)
+        for (int i = 0; i < pow(operators.length(), numbers.size()-1); i++)
         {
-            for (int j = 0; j < numbers.size()-1; j++)
-                combination += operators[combination_index[j]];
 
+            // print the combination
+            if (debug)
+            {
+                cout << "combination_index: ";
+                for (int index : combination_index) cout << index << ", ";
+                cout << endl;
+            }
+            
+
+            // remove the | operations
+            
+            operations.clear();     // make a copy of combination_index
+            operations.insert(operations.begin(), combination_index.begin(), combination_index.end());
+
+            simplified_numbers.clear();     // make a copy of numbers
+            simplified_numbers.insert(simplified_numbers.begin(), numbers.begin(), numbers.end());
+
+            for (int j = 0; j < simplified_numbers.size()-1; j++)
+            {
+                if (operations[j]==2)   // 2: |
+                {
+                    int val = stol( to_string(simplified_numbers[j]) + to_string(simplified_numbers[j+1]) );      // quick and dirty, I'm curious bout a way to compute the indice of a number  
+
+                    simplified_numbers.erase(simplified_numbers.begin()+j);
+                    simplified_numbers[j] = val;
+                    
+                    operations.erase(operations.begin()+j);
+                }
+            }
+
+
+            // do the + and * computation
+            int value = simplified_numbers[0];
+            for (int j = 0; j < operations.size(); j++)
+            {
+                switch(operations[j])   // 0: +, 1: x
+                {
+                    case 0: value+=simplified_numbers[j+1]; break;
+                    case 1: value*=simplified_numbers[j+1]; break;
+                }
+            }
+
+            // add to the result if the equation equals the value test
+            if (value == test_value)
+            {
+                res+=test_value;
+                if (debug) cout << "add value to res: " << res << endl;
+                break;
+            }
+
+
+            // change the combination
+            
             combination_index[k]++;
             // if the last index is max, find the index that has to be changed
             if (combination_index[k]==operators.length())
             {
                 combination_index[k]=0;
-                do {k++; combination_index[k]++;}
-                while (k < numbers.size()-2 && combination_index[k]<operators.length()-1);
-                combination_index[k]++;
-                do {k--; combination_index[k]=0;}
-                while (k > 0)
+                do {k++;}
+                while (k < numbers.size()-2 && combination_index[k]==operators.length()-1); // find the non-max value in ascending direction
+                combination_index[k]++;                                                     // increase it
+                do {k--; combination_index[k]=0;}                                           // put to zero the others values in descending direction
+                while (k > 0);
             }
+
         }
-
-
-        /*
-        for (int i = 0; i < operators.length()*(numbers.size()-1); i++)
-        {
-            combination = "";
-            for (int k = 0; k < numbers.size()-1; k++)
-            {
-
-                if (debug)
-                {
-                    cout << "combination_index: ";
-                    for (int index : combination_index) cout << index << ", ";
-                    cout << endl;
-                }
-
-                for (int j = 0; j < numbers.size()-1; j++)
-                    combination += operators[combination_index[j]];
-                cout << combination << endl;
-
-                combination_index[k]++;
-                if (combination_index[k]==operators.length()) combination_index[k]=0;
-            }  
-        }
-        */
+    
     }
     
     f.close();
