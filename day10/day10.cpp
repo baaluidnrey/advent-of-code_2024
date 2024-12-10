@@ -28,10 +28,10 @@ int lookNextStep(const vector<int> &map, vector<int> &summits, unordered_map<int
 
                 if (map[next_p]==map[pos]+1) 
                 {
-                    if (map[next_p]==9 && find(summits.begin(), summits.end(), next_p)==summits.end())
+                    if (map[next_p]==9) // && find(summits.begin(), summits.end(), next_p)==summits.end())
                     {
                         path[next_p] = map[next_p];
-                        summits.push_back(next_p); // add it if it does not already exists
+                        summits.push_back(next_p); // add it if it does not already exists for part. 1 | always for part. 2
                     }
                     else lookNextStep(map, summits, path, next_p, width, height);
                 }
