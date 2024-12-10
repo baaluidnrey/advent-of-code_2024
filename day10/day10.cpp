@@ -10,29 +10,31 @@
 
 using namespace std;
 
-int lookNextStep(const vector<int> &map, vector<int> &summits, int &pos, const int &width, const int &height)
+int lookNextStep(const vector<int> &map, vector<int> &summits, unordered_map<int, int> &path, int &pos, const int &width, const int &height)
 {
-    if (debug) cout << "pos: " << pos << endl;
     int i = pos / width;
     int j = pos % width;
-    if (debug) cout << " - " << map[pos] << ": (" << i << ", " << j << ")" << endl;
+    path[pos] = map[pos];
 
     for (int di=-1; di<=1; di++)
     {
         for (int dj=-1; dj<=1; dj++)
         {
-            if ( (i+di)>=0 && (i+di)<height && (j+dj)>=0 && (j+dj)<width )
+            if ( (i+di)>=0 && (i+di)<height && (j+dj)>=0 && (j+dj)<width 
+                  && abs(di)!=abs(dj)
+                  )
             {
                 int next_p = (i+di)*width + (j+dj);
 
-                if (map[next_p]==9)
+                if (map[next_p]==map[pos]+1) 
                 {
-                    if (debug) cout << "found a summit in position (" << (i+di) << ", " << (j+dj) << ")" << endl;
-                    if (find(summits.begin(), summits.end(), next_p)==summits.end()) summits.push_back(next_p); // add it if it does not already exists
+                    if (map[next_p]==9 && find(summits.begin(), summits.end(), next_p)==summits.end())
+                    {
+                        path[next_p] = map[next_p];
+                        summits.push_back(next_p); // add it if it does not already exists
+                    }
+                    else lookNextStep(map, summits, path, next_p, width, height);
                 }
-
-                else if (map[next_p]==map[pos]+1) lookNextStep(map, summits, next_p, width, height);
-
             } 
         }
     }
@@ -47,13 +49,14 @@ int main()
     string str;
     vector<int> map;
     vector<int> summits, tmp_summits;
+    unordered_map<int, int> path;
     unordered_map<int, vector<int>> trailheads;
     int width, height;
     int res = 0;
 
 
     // open puzzle input
-    ifstream f("test_input.txt");
+    ifstream f("input.txt");
     if (!f.is_open())
     {
         cerr << "Error opening the file!";
@@ -77,29 +80,52 @@ int main()
     f.close();
 
     // display map
-    cout << "map" << endl;
-    for (int i=0; i<height; i++)
+    if (debug)
     {
-        for (int j = 0; j<width; j++)
-            cout << " " << map[i*width+j] << " ";
-        cout << endl;
+        cout << "map" << endl;
+        for (int i=0; i<height; i++)
+        {
+            for (int j = 0; j<width; j++)
+                cout << " " << map[i*width+j] << " ";
+            cout << endl;
+        }
     }
 
 
     // search for paths in map
-    // for (int p : map)
+
     for (int p = 0; p<map.size(); p++)
     {
         if (map[p]==0)
         {
-            if (debug) cout << "---" << endl;
+            // initialization of path
+            for (int i = 0; i<map.size(); i++) path[i] = -1;
+
             summits.clear();
-            lookNextStep(map, summits, p, width, height);
+            lookNextStep(map, summits, path, p, width, height);
 
             // copy summits in tmp summits
             tmp_summits.clear();
             tmp_summits.insert(tmp_summits.begin(), summits.begin(), summits.end());
             trailheads[p] = tmp_summits;
+
+            // display map
+            if (debug)
+            {
+                cout << "--- " << (int) p/width << ", " << (int) p%width << " ---" << endl;
+                cout << tmp_summits.size() << " summits" << endl;
+                for (int i=0; i<height; i++)
+                {
+                    for (int j = 0; j<width; j++)
+                    {
+
+                        int val = path[i*width+j];
+                        if (val==-1)    cout << "   ";
+                        else            cout << " " << path[i*width+j] << " ";
+                    }
+                    cout << endl;
+                }
+            }
         }
     }
 
@@ -108,9 +134,12 @@ int main()
     for (auto it : trailheads)
     {
         res += it.second.size();
-        cout << it.first << ": ";
-        for (int i : it.second) cout << "(" << (int) i/width << ", " << (int) i%width << "), ";
-        cout << endl;
+        if (debug)
+        {
+            cout << it.first << ": ";
+            for (int i : it.second) cout << "(" << (int) i/width << ", " << (int) i%width << "), ";
+            cout << endl;
+        }
     }
 
     cout << "res: " << res << endl;
