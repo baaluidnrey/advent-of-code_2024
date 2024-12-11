@@ -56,7 +56,6 @@ int main()
 
         if (pos_start > 0)  addStoneToMap(stones, stol(str.substr(pos_start)), 1);
 
-
         // print to check
         if (debug) printMap(stones);
     }
@@ -90,15 +89,15 @@ int main()
             else    addStoneToMap(stones_tmp, val*2024, nb);
         }
 
-    // put the content of stones_tmp in stones
-    stones.clear();
-    stones.insert(stones_tmp.begin(), stones_tmp.end());
+        // put the content of stones_tmp in stones
+        stones.clear();
+        stones.insert(stones_tmp.begin(), stones_tmp.end());
 
-    // display stones
-    if (debug) printMap(stones);
+        // display stones
+        if (debug) printMap(stones);
 
-    i++;
-    cout << "i: " << i << endl;
+        i++;
+        cout << "i: " << i << endl;
     } while (i!=nb_blinks);
 
 
