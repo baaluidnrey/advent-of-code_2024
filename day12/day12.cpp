@@ -6,7 +6,7 @@
 #include <set>
 #include <cmath>
 
-#define debug true
+#define debug false
 
 using namespace std;
 
@@ -38,7 +38,7 @@ void displayArea(const vector<int> &area, const int &height, const int &width)
 
 
 void discoverArea(const vector<char> &map, vector<int> &area, const char &plant, 
-                    const int &p, const int &height, const int &width)
+                    const int &p, const int &height, const int &width, int &perimeter)
 {
     int i = p / width;
     int j = p % width;
@@ -48,16 +48,19 @@ void discoverArea(const vector<char> &map, vector<int> &area, const char &plant,
     {
         for (int dj=-1; dj<=1; dj++)
         {
-            if ( (i+di)>=0 && (i+di)<height && (j+dj)>=0 && (j+dj)<width 
-                  && abs(di)!=abs(dj)
-                  ) {
-                int next_p = (i+di)*width + (j+dj);
-                if (map[next_p]==plant) {
-                    if (find(area.begin(), area.end(), next_p)==area.end()) {
-                        discoverArea(map, area, plant, next_p, height, width);
+            if (abs(di)!=abs(dj))   // avoid diagonals and current position
+            {
+                if ( (i+di)>=0 && (i+di)<height && (j+dj)>=0 && (j+dj)<width )  // check that the position is in the map
+                {
+                    int next_p = (i+di)*width + (j+dj);
+                    if (map[next_p]==plant) {
+                        if (find(area.begin(), area.end(), next_p)==area.end())
+                            discoverArea(map, area, plant, next_p, height, width, perimeter);
                     }
+                    else perimeter++;   // because the case just next to it is not the same plant
                 }
-            } 
+                else perimeter++;       // because it's the border of the map
+            }
         }
     }
 }
@@ -75,7 +78,7 @@ int main()
     long res = 0;
 
     // open puzzle input
-    ifstream f("test_input.txt");
+    ifstream f("input.txt");
     if (!f.is_open())
     {
         cerr << "Error opening the file!";
@@ -117,15 +120,17 @@ int main()
             if (map[p]==plant && find(plant_map.begin(), plant_map.end(), p)==plant_map.end())
             {
                 plant_area.clear();
-                discoverArea(map, plant_area, plant, p, height, width);
+                int perimeter = 0;
+                discoverArea(map, plant_area, plant, p, height, width, perimeter);
                 for (auto pos : plant_area) plant_map.push_back(pos);
 
                 if (debug) displayArea(plant_area, height, width);
-                if (debug) cout << "area: " << plant_area.size() << endl;
+                if (debug) cout << "area: " << plant_area.size() << ", perimeter: " << perimeter << endl;
+                res += perimeter*plant_area.size();
             }
         }
     }
 
-
+    cout << "res: " << res << endl;
     return 0;
 }
